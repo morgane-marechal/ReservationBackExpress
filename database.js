@@ -1,12 +1,13 @@
 const { Client } = require('pg');
+require('dotenv').config();
 
 class Database {
     constructor() {
         this.client = new Client({
-            host: 'localhost',
-            user: 'app',
-            password: 'password',
-            port: 5433,
+            host: process.env.DB_HOST,
+            user: process.env.DB_USER,
+            password: process.env.DB_PASSWORD,
+            port: process.env.DB_PORT,
         });
     }
 
@@ -77,12 +78,6 @@ class Database {
     }
 
     async  listeUsers(){
-        const client = new Client({
-            host: 'localhost',
-            user: 'app',
-            password: 'password',
-            port: 5433,
-        });
         await this.client.connect();
         const res = await this.client.query(`SELECT * FROM users`);
         console.log(res.rows);
@@ -120,7 +115,7 @@ class Database {
         
 
 
-        //gestion reservations
+        //______________________________________gestion reservations ______________________________________________
         async  listeReservations(){
 
             await this.client.connect();
@@ -156,6 +151,35 @@ class Database {
             throw error; // Rethrow the error to handle it in the calling code
         }
     }
+
+//     SELECT nextval('reservations_id_seq');
+// INSERT INTO reservations (email, name, table_id, customernumber, reserveddate, reservedtime)
+//     VALUES ('hackdusiecle@proton.net', 'Jack toutlemonde', 1, 2, '2023-06-04', '12:30:00')
+
+    async  insertReservation(newResa) {
+        try {
+            await this.client.connect();
+      
+            const { email, name,table_id,customernumber,date, time } = newResa
+      
+            const query = `
+                INSERT INTO reservations (email, name, table_id, customernumber, reserveddate, reservedtime)
+                VALUES ($1, $2, $3, $4, $5, $6)
+                RETURNING *;
+            `;
+      
+            const values = [email, name,table_id,customernumber,date, time];
+            const res = await this.client.query(query, values);
+      
+            console.log('Reservation inserted:', res.rows[0]);
+            return res.rows[0];
+        } catch (error) {
+            console.error('Error inserting reservation:', error);
+            throw error;
+        } finally {
+            await this.client.end();
+        }
+      }
   
 }
 
