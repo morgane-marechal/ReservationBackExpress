@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 const portExpress = 3001
 const Hello = require('./place.js');
-const Database = require('./database.js');
+const Database = require('./Database.js');
+const User = require('./User.js')
+const Reservation = require('./Reservations.js')
 const { Client } = require('pg') 
 const cors = require('cors');
 require('dotenv').config();
@@ -24,11 +26,12 @@ app.listen(portExpress, () => {
 })
 
 
+//_________________________________User routes _________________________________________________
 
-  app.get('/testBdd', async function(req, res) {
+  app.get('/getOneUser', async function(req, res) {
     try {
-      const bdd = new Database
-      let dataEmail = await bdd.getUsersById(2);
+      const bdd = new User;
+      let dataEmail = await bdd.getUsersById(3);
       console.log(dataEmail); // Logging the fetched data
       res.send(dataEmail);
   } catch (error) {
@@ -37,10 +40,39 @@ app.listen(portExpress, () => {
   }
   });
 
-//requete pour les reservations
+  app.get('/listeUsers', async function(req, res) {
+    try {
+      const bdd = new User;
+      let listeUsers = await bdd.getUsers();
+      console.log(listeUsers); // Logging the fetched data
+      res.send(listeUsers);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).send('Internal Server Error');
+  }
+  });
+
+  app.get('/insertUser', async function(req, res) {
+    const newUser = {
+      email: "tomuser@proton.net",
+      password: "securepassword"
+    };
+    try {
+      const bdd = new User;
+      let dataEmail = await bdd.insertUser(newUser);
+      console.log(dataEmail); // Logging the fetched data
+      res.send(dataEmail);
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).send('Internal Server Error');
+  }
+  });
+
+//____________________________Reservations routes _______________________________________
+
   app.get('/listeReservations', async function(req, res) {
     try {
-      const bdd = new Database
+      const bdd = new Reservation();
       let dataReservations = await bdd.listeReservations();
       // let dataReservations = await bdd.getReservationsByTime('2023-04-08','12:30:00');
       console.log(dataReservations); 
@@ -53,7 +85,7 @@ app.listen(portExpress, () => {
 
   app.get('/listeReservationsByDate', async function(req, res) {
     try {
-      const bdd = new Database
+      const bdd = new Reservation;
       let date = '2023-04-08';
       let dataReservations = await bdd.getReservationsByDate(date);
       // let dataReservations = await bdd.getReservationsByTime('2023-04-08','12:30:00');
@@ -65,21 +97,7 @@ app.listen(portExpress, () => {
   }
   });
 
-  app.get('/createUser', async function(req, res) {
-    const newUser = {
-      email: "katya@proton.net",
-      password: "securepassword"
-    };
-    try {
-      const bdd = new Database
-      let dataEmail = await bdd.insertUser(newUser);
-      console.log(dataEmail); // Logging the fetched data
-      res.send(dataEmail);
-  } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).send('Internal Server Error');
-  }
-  });
+
 
 // Handle POST request to create a reservation
 app.post('/createReservation', async (req, res) => {
@@ -98,7 +116,7 @@ app.post('/createReservation', async (req, res) => {
     };
 
 
-    const bdd = new Database();
+    const bdd = new Reservation();
     const insertedReservation = await bdd.insertReservation(newReservation);
     
     console.log('Reservation created:', insertedReservation);
