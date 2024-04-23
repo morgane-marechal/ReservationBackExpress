@@ -6,6 +6,7 @@ const Database = require('./database.js');
 const { Client } = require('pg') 
 const cors = require('cors');
 require('dotenv').config();
+app.use(express.json()); //parse les données reçues en json
 
 app.use(cors()); //necessaire pour communiquer avec react
 
@@ -66,7 +67,7 @@ app.listen(portExpress, () => {
 
   app.get('/createUser', async function(req, res) {
     const newUser = {
-      email: "hackdusiecle@proton.net",
+      email: "katya@proton.net",
       password: "securepassword"
     };
     try {
@@ -80,25 +81,34 @@ app.listen(portExpress, () => {
   }
   });
 
-  app.get('/createReservation', async function(req, res) {
+// Handle POST request to create a reservation
+app.post('/createReservation', async (req, res) => {
+  try {
+    const { email, name, customernumber, date, time } = req.body;
+    // console.log(req);
+    console.log('req body : ',req.body);
+    console.log(`${req.body}`);
+
     const newReservation = {
-      email: "hackdusiecle@proton.net",
-      name: 'Jack Toulemonde',
-      table_id : 1,
-      customernumber:6,
-      date:'2023-05-05',
-      time:'12:30:00'
+      email,
+      name,
+      customernumber,
+      date,
+      time
     };
-    try {
-      const bdd = new Database
-      let resa = await bdd.insertReservation(newReservation);
-      console.log(resa); // Logging the fetched data
-      res.send(resa);
+
+
+    const bdd = new Database();
+    const insertedReservation = await bdd.insertReservation(newReservation);
+    
+    console.log('Reservation created:', insertedReservation);
+    res.status(201).json(insertedReservation); // Send a success response with the inserted reservation
   } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).send('Internal Server Error');
+    console.error('Error creating reservation:', error);
+    res.status(500).send('Internal Server Error');
   }
-  });
+});
+
 
 
 app.get('/data', function(req, res) {

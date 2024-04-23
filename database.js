@@ -160,15 +160,15 @@ class Database {
         try {
             await this.client.connect();
       
-            const { email, name,table_id,customernumber,date, time } = newResa
+            const { email, name, customernumber,date, time } = newResa
       
             const query = `
-                INSERT INTO reservations (email, name, table_id, customernumber, reserveddate, reservedtime)
-                VALUES ($1, $2, $3, $4, $5, $6)
+                INSERT INTO reservations (email, name, customernumber, reserveddate, reservedtime)
+                VALUES ($1, $2, $3, $4, $5)
                 RETURNING *;
             `;
       
-            const values = [email, name,table_id,customernumber,date, time];
+            const values = [email, name, customernumber,date, time];
             const res = await this.client.query(query, values);
       
             console.log('Reservation inserted:', res.rows[0]);

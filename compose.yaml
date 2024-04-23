@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: app
       POSTGRES_DB: app
     ports:
-      - '5433:5432'
+      - '5434:5432'
     volumes:
       - ./pgdata:/var/lib/postgresql/data  # Utiliser un volume pour persister les données
     restart: always  # Redémarrer le conteneur en cas de problème
