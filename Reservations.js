@@ -53,6 +53,18 @@ async getReservationsByTime(date, time) {
     }
 }
 
+async getBookedTablesAtThisTime(date, time) {
+    try {
+        await this.connect();
+        const res = await this.client.query('SELECT SUM(customernumber) AS sum_customer FROM reservations WHERE reserveddate = $1 AND reservedtime = $2', [date, time]);
+        const reservations = res.rows;
+        await this.client.end();
+        return reservations;
+    } catch (error) {
+        console.error('Error fetching data from database:', error);
+        throw error; // Rethrow the error to handle it in the calling code
+    }
+}
 
 async  insertReservation(newResa) {
     try {

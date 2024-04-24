@@ -114,8 +114,6 @@ app.post('/createReservation', async (req, res) => {
       date,
       time
     };
-
-
     const bdd = new Reservation();
     const insertedReservation = await bdd.insertReservation(newReservation);
     
@@ -127,7 +125,33 @@ app.post('/createReservation', async (req, res) => {
   }
 });
 
+app.get('/bookingNumber/:date/:time', async function(req, res) {
+    try {
+      // const { date, time } = req.body;
+      // console.log(req);
+      // console.log('req body : ',req.body);
+      // console.log(`${req.body}`);
+      // res.send("date is set to " + req.params.date+"time is set to " + req.params.time);
 
+      // const bookingNumber = {
+      //   date,
+      //   time
+      // };
+      const bookingNumber = {
+        date: '2023-04-22',
+        time: '13:00:00'
+      };
+    const bdd = new Reservation();
+    // let dataReservations = await bdd.getBookedTablesAtThisTime(bookingNumber.date, bookingNumber.time);
+    let dataReservations = await bdd.getBookedTablesAtThisTime(req.params.date, req.params.time);
+    // let dataReservations = await bdd.getReservationsByTime('2023-04-08','12:30:00');
+    console.log(dataReservations); 
+    res.send(dataReservations);
+} catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+}
+});
 
 app.get('/data', function(req, res) {
     const data = [
