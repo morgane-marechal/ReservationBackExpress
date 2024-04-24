@@ -160,11 +160,7 @@ app.get('/data', function(req, res) {
         model: "Mustang",
         year: 1969
       },
-      { 
-        make: "Toyota",
-        model: "Subaru",
-        year: 1990
-      }
+
     ]
     res.send(
         data
