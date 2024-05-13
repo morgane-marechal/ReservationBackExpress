@@ -30,8 +30,8 @@ app.listen(portExpress, () => {
 
   app.get('/getOneUser', async function(req, res) {
     try {
-      const bdd = new User;
-      let dataEmail = await bdd.getUsersById(3);
+      const bdd = new User();
+      let dataEmail = await bdd.getUserById(3);
       console.log(dataEmail); // Logging the fetched data
       res.send(dataEmail);
   } catch (error) {
