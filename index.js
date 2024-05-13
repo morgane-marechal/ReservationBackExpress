@@ -3,8 +3,8 @@ const app = express()
 const portExpress = 3001
 const Hello = require('./place.js');
 const Database = require('./Database.js');
-const User = require('./User.js')
 const Reservation = require('./Reservations.js')
+const User = require('/User.js')
 const { Client } = require('pg') 
 const cors = require('cors');
 require('dotenv').config();
@@ -166,3 +166,29 @@ app.get('/data', function(req, res) {
         data
     );
   });
+
+
+  // Handle POST request to create a new user
+app.post('/register', async (req, res) => {
+  try {
+    const { firstname, lastname, email, password } = req.body;
+    // console.log(req);
+    console.log('req body : ',req.body);
+    console.log(`${req.body}`);
+
+    const newUser = {
+      firstname,
+      lastname,
+      email,
+      password
+    };
+    const bdd = new User();
+    const insertedUser = await bdd.insertUser(newUser);
+    
+    console.log('User was sussefully registed:', insertedUser);
+    res.status(201).json(insertedUser); // Send a success response with the inserted reservation
+  } catch (error) {
+    console.error('Error creating reservation:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
