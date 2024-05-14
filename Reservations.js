@@ -40,6 +40,21 @@ async getReservationsByDate(date) {
     }
 }
 
+async getReservationByEmail(email){
+    try {
+        await this.connect();
+        const res = await this.client.query('SELECT * FROM reservations WHERE email = $1', [email]);
+        const reservations = res.rows;
+        await this.client.end();
+        return reservations;
+    } catch (error) {
+        console.error('Error fetching data from database:', error);
+        throw error; // Rethrow the error to handle it in the calling code
+    }finally {
+        await this.disconnect(); // Utiliser la méthode de déconnexion de la classe parente
+    }
+}
+
 async getReservationsByTime(date, time) {
     try {
         await this.connect();
