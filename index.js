@@ -3,8 +3,8 @@ const app = express()
 const portExpress = 3001
 const Hello = require('./place.js');
 const Database = require('./Database.js');
-const User = require('./User.js')
 const Reservation = require('./Reservations.js')
+const User = require('./User.js')
 const { Client } = require('pg') 
 const cors = require('cors');
 require('dotenv').config();
@@ -26,6 +26,38 @@ app.listen(portExpress, () => {
 })
 
 
+//_________________________________Login route___________________________________________________
+
+//app.get('/login', async)
+
+//_________________________________Admin route____________
+
+app.get('/admin', async function(req, res){
+  try {
+    const bdd = new Reservation();
+    let dataReservations = await bdd.listeReservations();
+    // let dataReservations = await bdd.getReservationsByTime('2023-04-08','12:30:00');
+    console.log(dataReservations); 
+    res.send(dataReservations);
+} catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).send('Internal Server Error');
+}
+})
+
+app.get('/admin/reservationbyemail/:email', async function(req, res){
+  try {
+    const bdd = new Reservation();
+    let emailReservation = await bdd.getReservationByEmail(req.params.email);
+    console.log(emailReservation);
+    res.send(emailReservation);
+
+} catch (error) {
+  console.log('Error');
+  res.status(500).send('Internal Server Error');
+}
+
+})
 //_________________________________User routes _________________________________________________
 
   app.get('/getOneUser', async function(req, res) {
@@ -166,3 +198,29 @@ app.get('/data', function(req, res) {
         data
     );
   });
+
+
+  // Handle POST request to create a new user
+app.post('/register', async (req, res) => {
+  try {
+    const { firstname, lastname, email, password } = req.body;
+    // console.log(req);
+    console.log('req body : ',req.body);
+    console.log(`${req.body}`);
+
+    const newUser = {
+      firstname,
+      lastname,
+      email,
+      password
+    };
+    const bdd = new User();
+    const insertedUser = await bdd.insertUser(newUser);
+    
+    console.log('User was sussefully registed:', insertedUser);
+    res.status(201).json(insertedUser); // Send a success response with the inserted reservation
+  } catch (error) {
+    console.error('Error creating reservation:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
