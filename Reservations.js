@@ -24,6 +24,7 @@ class Reservation extends Database {
         }
     }
 
+    
 
 async getReservationsByDate(date) {
     try {

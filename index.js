@@ -1,6 +1,6 @@
-const express = require('express')
-const app = express()
-const portExpress = 3001
+const express = require('express');
+const app = express();
+const portExpress = 3001;
 const Hello = require('./place.js');
 const Database = require('./Database.js');
 const Reservation = require('./Reservations.js')
@@ -8,6 +8,7 @@ const User = require('./User.js')
 const { Client } = require('pg') 
 const cors = require('cors');
 require('dotenv').config();
+
 app.use(express.json()); //parse les données reçues en json
 
 app.use(cors()); //necessaire pour communiquer avec react
@@ -28,7 +29,23 @@ app.listen(portExpress, () => {
 
 //_________________________________Login route___________________________________________________
 
-//app.get('/login', async)
+app.post('/api/login', async function(req, res){
+  const { email, password } = req.body;
+  try {
+    const userDb = new User();
+    const result = await userDb.loginUser(email, password);
+    
+    if(result.success){
+      res.status(200).json({ message: result.message });
+    } else {
+      res.result(401).json({ message: result.message });
+    }
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message:'An error occured during login' });
+  }
+});
+ 
 
 //_________________________________Admin route____________
 

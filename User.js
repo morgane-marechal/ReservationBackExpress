@@ -40,14 +40,32 @@ class User extends Database {
     async getUsersByEmail(email) {
         try {
             await this.connect(); // Utiliser la méthode de connexion de la classe parente
-            const res = await this.client.query('SELECT * FROM users WHERE id = $1', [email]);
-            const user = res.rows;
+            const res = await this.client.query('SELECT * FROM users WHERE email = $1', [email]);
+            const user = res.rows[0];
             return user;
         } catch (error) {
             console.error('Error fetching user data from database:', error);
             throw error;
         } finally {
             await this.disconnect(); // Utiliser la méthode de déconnexion de la classe parente
+        }
+    }
+
+    async loginUser(email, password){
+        try {
+          const user = await this.getUsersByEmail(email);
+          if(!user) {
+            return { success: false, message: 'Invalid email or password'};
+          }
+          if (password === user.password) {
+            return { success: true, message: 'Login successful' };
+          } else {
+            return { success: false, message: 'Invalid email or password' };
+          }
+          
+        } catch (error){
+            console.error('Error logging in user:', error);
+            throw error;
         }
     }
 
