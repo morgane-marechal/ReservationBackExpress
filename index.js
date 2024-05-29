@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const portExpress = 3001;
+const portExpress = 3002;
 const Hello = require('./place.js');
 const Database = require('./Database.js');
 const Reservation = require('./Reservations.js')
@@ -25,6 +25,8 @@ app.get('/', (req, res) => {
 app.listen(portExpress, () => {
   console.log(`Example app listening on port ${portExpress}`)
 })
+
+
 
 
 //_________________________________Login route___________________________________________________
@@ -75,6 +77,34 @@ app.get('/admin/reservationbyemail/:email', async function(req, res){
 }
 
 })
+
+
+app.delete('/admin/deleteReservation/:id', async (req, res) => {
+
+  try {
+   const resId = req.params.id;
+   const bdd = new Reservation();
+   let result = await bdd.deleteReservation(resId);
+   if (result){
+     res.status(200).send(result);
+   } else{
+     res.status(404).send('Reservation is not found');
+   }
+ } catch (error){
+   console.log('Error: ', error);
+   res.status(500).send('Failed to delete');
+ }
+ });
+
+
+
+// app.get('/admin/deleteReservation/:id', async (req, res) => {
+
+//   const resId = req.params.id;
+//   res.status(200).send("resId is " + resId);
+// });
+
+
 //_________________________________User routes _________________________________________________
 
   app.get('/getOneUser', async function(req, res) {
@@ -118,6 +148,8 @@ app.get('/admin/reservationbyemail/:email', async function(req, res){
   });
 
 //____________________________Reservations routes _______________________________________
+
+
 
   app.get('/listeReservations', async function(req, res) {
     try {

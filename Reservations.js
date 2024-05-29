@@ -1,6 +1,7 @@
 const { Client } = require('pg');
 require('dotenv').config();
 const Database = require('./Database');
+const { DELETE } = require('sequelize/lib/query-types');
 
 class Reservation extends Database {
     constructor() {
@@ -107,6 +108,34 @@ async  insertReservation(newResa) {
     }
   }
 
+
+  async deleteReservation(id) {
+    try {
+        await this.connect();
+
+        const query = `
+        DELETE FROM reservations
+        WHERE id = $1
+        RETURNING *;`
+        ;
+
+        const res = await this.client.query(query, [id]);
+
+        if (res.rowCount === 0 ) {
+
+            throw new Error(`La reservation avec id ${id} n'a pas été trouvée`)
+        }
+
+        console.log('La reservation a été suprimée: ', res.rows[0]);
+        return res.rows[0];
+    } catch (error){
+        console.error('Error deleting reservation:', error);
+        throw error;
+    } finally {
+        await this.disconnect();
+    }
+  }
+ 
   
 }
 
